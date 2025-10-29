@@ -1,40 +1,27 @@
-# Section 5 – Refactoring Code Smells in Practice
+# Smelly Code Smells :(
 
-This activity is designed to help you practice identifying code smells and applying refactoring patterns to a real codebase in CMPM 121, Game Development Patterns.
+## Mysterious Names
 
-## Assignment Instructions
+- Unclear variable names like `const a = "increment"` and `const b = "counter"` make the code hard to read and maintain. I also felt that `let c = 0` to represent the counter would take a few seconds for the reader to process which could be easily avoided, so I used _Rename Variable_ to simply rename `c` to `counter`.
+- I used _Rename Variable_ to rename the functions `bI`, `bD`, and `bR` to `buttonIncrement`, `buttonDecrement`, and `buttonReset` respectively; and the counter element `ctr` to `labelCounter` as well, to differentiate between the internal counter and the counter number being displayed.
+- On the other hand, I decided to completely remove constants `a` and `b`, since their mere presence led to the next code smell.
 
-For this assignment, your task is to **analyze and improve the code in `src/main.ts`**:
+## Inconsistent Style
 
-1. **Identify code smells**: Review the code and look for patterns that may cause maintenance issues, reduce readability, or introduce potential bugs.
-2. **Refactor**: Apply **refactoring patterns** as described in Fowler’s _Refactoring_ book to improve the code.
-3. **Document your work**: Once you have completed your refactoring:
-   - Rewrite this README.md
-   - List the **code smells** you identified
-   - Describe the **refactoring patterns** you applied and how they improved the code
+- This particular code smell isn't present in Fowler's book, but it's still present in this code.
+- The HTML for the counter is sometimes written as `<button id="dec">Decrement</button>`, and other times as `<button id="a">Increment</button>`.
+- I fixed this inconsistency by sticking to the former style for handling HTML elements, such as changing `<button id="a">Increment</button>` to `<button id="increment">Increment</button>`.
 
-## Getting Started
+## Duplicated Code
 
-With Codespaces (or another environment supporting devcontainers):
+- Every time an event listener is added to an HTML element, namely the three buttons of the program, the code to update the counter display is duplicated across each function.
+- I used _Extract Function_ on that piece of code and properly named it `updateDisplay()` in order to erase this issue.
 
-1. Run `deno task dev` to start the development server
+## Primitive Obsession --> Shotgun Surgery
 
-Without Codespaces (local VS Code):
-
-1. Install the [Deno](https://docs.deno.com/runtime/getting_started/installation/) runtime.
-2. Install the Deno VS Code extension (must be done only after installing Deno runtime).
-3. Run `./setup-hooks.sh` to enable pre-commit quality checks
-4. Run `deno task dev` to start the development server
-
-The setup script configures Git hooks to automatically run formatting, linting, and type checking before commits.
-
-## Deployment
-
-This project is configured for automatic deployment to GitHub Pages using GitHub Actions.
-
-### Setup GitHub Pages Deployment
-
-1. Go to your repository's Settings → Pages
-2. Under "Source", select "GitHub Actions"
-3. The workflow will automatically deploy on pushes to the `main` branch
-4. Your site will be published at `https://<your-github-username>.github.io/<repository-name>/`
+- In the program's previous state, adding a new button with similar functionality to the current three buttons would require the programmer to edit multiple places in the code:
+  1. Add the button to the document.
+  2. Grab the button from the document.
+  3. Add an event listener to the button.
+- This issue was a direct result of keeping each button as its own primitive object, rather than
+- Instead of proceeding one step at a time on all buttons, I decided to proceed by implementing all steps one button at a time. This required me to use _Replace Primitive with Object_, leading me to keep each button stored in an array of buttons such that each button is shaped by a `Button` interface.
